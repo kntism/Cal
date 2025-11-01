@@ -27,7 +27,7 @@ export default function BasicMathCalculator() {
   const [showSymbolKeyboard, setShowSymbolKeyboard] = useState(false);
 
   const handleGlobalKeyPress = (e: KeyboardEvent) => {
-    if (e.key === "Shift") {
+    if (e.key === "n" || e.key === "N") {
       const newRows = [...rows];
       const insertIndex = selectedRowIndex + 1;
       const newId = Date.now().toString();
@@ -140,7 +140,7 @@ export default function BasicMathCalculator() {
                     <div className="space-y-2">
                       <div>
                         <kbd className="px-2 py-1 bg-blue-900/50 border border-blue-700 rounded text-blue-300">
-                          Shift
+                          n
                         </kbd>
                         <span className="ml-2">添加新行</span>
                       </div>
