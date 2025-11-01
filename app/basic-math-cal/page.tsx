@@ -178,6 +178,7 @@ export default function BasicMathCalculator() {
     { id: "1", value: "", result: null, error: null },
   ]);
   const [selectedRowIndex, setSelectedRowIndex] = useState(0);
+  const [showSymbolKeyboard, setShowSymbolKeyboard] = useState(false);
 
   const handleGlobalKeyPress = (e: KeyboardEvent) => {
     if (e.key === "Shift") {
@@ -198,6 +199,9 @@ export default function BasicMathCalculator() {
         setRows(newRows);
         setSelectedRowIndex(selectedRowIndex - 1);
       }
+    } else if (e.key === "Control") {
+      e.preventDefault();
+      setShowSymbolKeyboard(!showSymbolKeyboard);
     }
   };
 
@@ -206,7 +210,7 @@ export default function BasicMathCalculator() {
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyPress);
     };
-  }, [selectedRowIndex, rows]);
+  }, [selectedRowIndex, rows, showSymbolKeyboard]);
 
   const handleRowChange = (index: number, value: string) => {
     const newRows = [...rows];
@@ -214,6 +218,40 @@ export default function BasicMathCalculator() {
     newRows[index].result = null;
     newRows[index].error = null;
     setRows(newRows);
+  };
+
+  const insertSymbol = (symbol: string) => {
+    const newRows = [...rows];
+    const currentRow = newRows[selectedRowIndex];
+    const inputElement = document.querySelector(
+      `input[data-row-index="${selectedRowIndex}"]`
+    ) as HTMLInputElement;
+
+    if (inputElement) {
+      const start = inputElement.selectionStart || 0;
+      const end = inputElement.selectionEnd || 0;
+      const newValue =
+        currentRow.value.slice(0, start) + symbol + currentRow.value.slice(end);
+      newRows[selectedRowIndex].value = newValue;
+      newRows[selectedRowIndex].result = null;
+      newRows[selectedRowIndex].error = null;
+      setRows(newRows);
+
+      // Restore focus and set cursor position after symbol
+      setTimeout(() => {
+        inputElement.focus();
+        inputElement.setSelectionRange(
+          start + symbol.length,
+          start + symbol.length
+        );
+      }, 0);
+    } else {
+      // Fallback: append to end
+      newRows[selectedRowIndex].value += symbol;
+      newRows[selectedRowIndex].result = null;
+      newRows[selectedRowIndex].error = null;
+      setRows(newRows);
+    }
   };
 
   const handleRowKeyPress = (
@@ -236,7 +274,7 @@ export default function BasicMathCalculator() {
 
   return (
     <div className="pt-24 pb-16 min-h-screen">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-4">
         <h1 className="text-4xl font-bold mb-8 text-center">
           Basic Math Calculator
         </h1>
@@ -249,8 +287,51 @@ export default function BasicMathCalculator() {
             <kbd className="px-2 py-1 bg-blue-200 rounded">Delete</kbd>{" "}
             删除当前行，按{" "}
             <kbd className="px-2 py-1 bg-blue-200 rounded">Enter</kbd>{" "}
-            计算当前行
+            计算当前行，点击{" "}
+            <kbd className="px-2 py-1 bg-green-200 rounded text-green-800">
+              显示符号键盘
+            </kbd>{" "}
+            按钮在当前行左侧显示符号键盘
           </p>
+        </div>
+
+        <div className="mb-6 flex flex-wrap gap-2">
+          <button
+            onClick={() => insertSymbol("^")}
+            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors font-semibold"
+          >
+            幂 (^)
+          </button>
+          <button
+            onClick={() => insertSymbol("**")}
+            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors font-semibold"
+          >
+            幂 (**)
+          </button>
+          <button
+            onClick={() => insertSymbol("sqrt(")}
+            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors font-semibold"
+          >
+            开方 (sqrt)
+          </button>
+          <button
+            onClick={() => insertSymbol("(")}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+          >
+            (
+          </button>
+          <button
+            onClick={() => insertSymbol(")")}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+          >
+            )
+          </button>
+          <button
+            onClick={() => setShowSymbolKeyboard(!showSymbolKeyboard)}
+            className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-semibold"
+          >
+            {showSymbolKeyboard ? "隐藏符号键盘" : "显示符号键盘"}
+          </button>
         </div>
 
         <div className="space-y-3">
@@ -271,12 +352,94 @@ export default function BasicMathCalculator() {
                 {index + 1}
               </span>
 
+              {showSymbolKeyboard && index === selectedRowIndex && (
+                <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded-lg border border-gray-300 shadow-md">
+                  <div className="grid grid-cols-4 gap-1">
+                    <button
+                      onClick={() => insertSymbol("+")}
+                      className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
+                    >
+                      +
+                    </button>
+                    <button
+                      onClick={() => insertSymbol("-")}
+                      className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
+                    >
+                      -
+                    </button>
+                    <button
+                      onClick={() => insertSymbol("*")}
+                      className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
+                    >
+                      ×
+                    </button>
+                    <button
+                      onClick={() => insertSymbol("/")}
+                      className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
+                    >
+                      ÷
+                    </button>
+
+                    <button
+                      onClick={() => insertSymbol("^")}
+                      className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-sm font-semibold text-purple-700"
+                    >
+                      ^
+                    </button>
+                    <button
+                      onClick={() => insertSymbol("**")}
+                      className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-xs font-semibold text-purple-700"
+                    >
+                      **
+                    </button>
+                    <button
+                      onClick={() => insertSymbol("sqrt(")}
+                      className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-xs font-semibold text-purple-700"
+                    >
+                      √
+                    </button>
+                    <button
+                      onClick={() => insertSymbol("pi")}
+                      className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-sm font-semibold text-purple-700"
+                    >
+                      π
+                    </button>
+
+                    <button
+                      onClick={() => insertSymbol("(")}
+                      className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
+                    >
+                      (
+                    </button>
+                    <button
+                      onClick={() => insertSymbol(")")}
+                      className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
+                    >
+                      )
+                    </button>
+                    <button
+                      onClick={() => insertSymbol(".")}
+                      className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
+                    >
+                      .
+                    </button>
+                    <button
+                      onClick={() => insertSymbol(",")}
+                      className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
+                    >
+                      ,
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <input
                 type="text"
                 value={row.value}
                 onChange={(e) => handleRowChange(index, e.target.value)}
                 onKeyPress={(e) => handleRowKeyPress(e, index)}
                 onFocus={() => setSelectedRowIndex(index)}
+                data-row-index={index}
                 placeholder="输入算式，例如：2 + 3 * 4"
                 className="flex-1 px-4 py-2 text-lg border border-gray-300 rounded
                          focus:border-blue-500 focus:outline-none transition-colors"
