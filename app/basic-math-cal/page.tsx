@@ -1,6 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { HelpCircle } from "lucide-react";
 
 interface InputRow {
   id: string;
@@ -274,189 +283,199 @@ export default function BasicMathCalculator() {
 
   return (
     <div className="pt-24 pb-16 min-h-screen">
-      <div className="max-w-6xl mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-8 text-center">
-          Basic Math Calculator
-        </h1>
-
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <p className="text-sm text-blue-800">
-            <strong>操作说明：</strong>按{" "}
-            <kbd className="px-2 py-1 bg-blue-200 rounded">Shift</kbd>{" "}
-            添加行，按{" "}
-            <kbd className="px-2 py-1 bg-blue-200 rounded">Delete</kbd>{" "}
-            删除当前行，按{" "}
-            <kbd className="px-2 py-1 bg-blue-200 rounded">Enter</kbd>{" "}
-            计算当前行，点击{" "}
-            <kbd className="px-2 py-1 bg-green-200 rounded text-green-800">
-              显示符号键盘
-            </kbd>{" "}
-            按钮在当前行左侧显示符号键盘
-          </p>
-        </div>
-
-        <div className="mb-6 flex flex-wrap gap-2">
-          <button
-            onClick={() => insertSymbol("^")}
-            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors font-semibold"
-          >
-            幂 (^)
-          </button>
-          <button
-            onClick={() => insertSymbol("**")}
-            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors font-semibold"
-          >
-            幂 (**)
-          </button>
-          <button
-            onClick={() => insertSymbol("sqrt(")}
-            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors font-semibold"
-          >
-            开方 (sqrt)
-          </button>
-          <button
-            onClick={() => insertSymbol("(")}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
-          >
-            (
-          </button>
-          <button
-            onClick={() => insertSymbol(")")}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
-          >
-            )
-          </button>
-          <button
-            onClick={() => setShowSymbolKeyboard(!showSymbolKeyboard)}
-            className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-semibold"
-          >
-            {showSymbolKeyboard ? "隐藏符号键盘" : "显示符号键盘"}
-          </button>
-        </div>
-
-        <div className="space-y-3">
-          {rows.map((row, index) => (
-            <div
-              key={row.id}
-              className={`flex items-start gap-3 p-4 rounded-lg border transition-colors ${
-                index === selectedRowIndex
-                  ? "bg-blue-50 border-blue-400 shadow-md"
-                  : "bg-white border-gray-200 hover:border-gray-300"
-              }`}
-              onClick={() => setSelectedRowIndex(index)}
-            >
-              <span
-                className="flex-shrink-0 w-8 h-8 flex items-center justify-center
-                           font-semibold text-gray-600"
+      <div className="max-w-11/12 mx-auto px-4">
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <h1 className="text-4xl font-bold">Basic Math Calculator</h1>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                title="操作说明"
               >
-                {index + 1}
-              </span>
-
-              {showSymbolKeyboard && index === selectedRowIndex && (
-                <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded-lg border border-gray-300 shadow-md">
-                  <div className="grid grid-cols-4 gap-1">
-                    <button
-                      onClick={() => insertSymbol("+")}
-                      className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
-                    >
-                      +
-                    </button>
-                    <button
-                      onClick={() => insertSymbol("-")}
-                      className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
-                    >
-                      -
-                    </button>
-                    <button
-                      onClick={() => insertSymbol("*")}
-                      className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
-                    >
-                      ×
-                    </button>
-                    <button
-                      onClick={() => insertSymbol("/")}
-                      className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
-                    >
-                      ÷
-                    </button>
-
-                    <button
-                      onClick={() => insertSymbol("^")}
-                      className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-sm font-semibold text-purple-700"
-                    >
-                      ^
-                    </button>
-                    <button
-                      onClick={() => insertSymbol("**")}
-                      className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-xs font-semibold text-purple-700"
-                    >
-                      **
-                    </button>
-                    <button
-                      onClick={() => insertSymbol("sqrt(")}
-                      className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-xs font-semibold text-purple-700"
-                    >
-                      √
-                    </button>
-                    <button
-                      onClick={() => insertSymbol("pi")}
-                      className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-sm font-semibold text-purple-700"
-                    >
-                      π
-                    </button>
-
-                    <button
-                      onClick={() => insertSymbol("(")}
-                      className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
-                    >
-                      (
-                    </button>
-                    <button
-                      onClick={() => insertSymbol(")")}
-                      className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
-                    >
-                      )
-                    </button>
-                    <button
-                      onClick={() => insertSymbol(".")}
-                      className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
-                    >
-                      .
-                    </button>
-                    <button
-                      onClick={() => insertSymbol(",")}
-                      className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
-                    >
-                      ,
-                    </button>
+                <HelpCircle className="w-6 h-6 text-gray-600 hover:text-blue-600" />
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>操作说明</DialogTitle>
+                <DialogDescription asChild>
+                  <div className="space-y-4 text-sm text-gray-700 mt-4">
+                    <div className="space-y-2">
+                      <div>
+                        <kbd className="px-2 py-1 bg-blue-200 rounded">
+                          Shift
+                        </kbd>
+                        <span className="ml-2">添加新行</span>
+                      </div>
+                      <div>
+                        <kbd className="px-2 py-1 bg-blue-200 rounded">
+                          Delete
+                        </kbd>
+                        <span className="ml-2">删除当前行</span>
+                      </div>
+                      <div>
+                        <kbd className="px-2 py-1 bg-blue-200 rounded">
+                          Enter
+                        </kbd>
+                        <span className="ml-2">计算当前行</span>
+                      </div>
+                      <div>
+                        <kbd className="px-2 py-1 bg-green-200 rounded text-green-800">
+                          Ctrl
+                        </kbd>
+                        <span className="ml-2">在当前行左侧显示符号键盘</span>
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-gray-200">
+                      <p className="font-semibold mb-2">支持的运算符：</p>
+                      <ul className="space-y-1 text-xs">
+                        <li>• + - * / (基本四则运算)</li>
+                        <li>• ^ 或 ** (幂运算)</li>
+                        <li>• sqrt() (开方)</li>
+                        <li>• () (括号，控制优先级)</li>
+                      </ul>
+                    </div>
+                    <div className="pt-2">
+                      <p className="font-semibold mb-1">示例：</p>
+                      <ul className="space-y-1 text-xs">
+                        <li>• 2 + 3 * 4</li>
+                        <li>• 5 ^ 2</li>
+                        <li>• sqrt(16)</li>
+                        <li>• (2 + 3) * 4</li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              )}
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-              <input
-                type="text"
-                value={row.value}
-                onChange={(e) => handleRowChange(index, e.target.value)}
-                onKeyPress={(e) => handleRowKeyPress(e, index)}
-                onFocus={() => setSelectedRowIndex(index)}
-                data-row-index={index}
-                placeholder="输入算式，例如：2 + 3 * 4"
-                className="flex-1 px-4 py-2 text-lg border border-gray-300 rounded
+        <div className=" max-w-[100%] mx-auto">
+          <div className="space-y-3">
+            {rows.map((row, index) => (
+              <div
+                key={row.id}
+                className={`flex items-start gap-3 p-4 rounded-lg border transition-colors ${
+                  index === selectedRowIndex
+                    ? "bg-blue-50 border-blue-400 shadow-md"
+                    : "bg-white border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() => setSelectedRowIndex(index)}
+              >
+                <span
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center
+                           font-semibold text-gray-600"
+                >
+                  {index + 1}
+                </span>
+
+                {showSymbolKeyboard && index === selectedRowIndex && (
+                  <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded-lg border border-gray-300 shadow-md">
+                    <div className="grid grid-cols-4 gap-1">
+                      <button
+                        onClick={() => insertSymbol("+")}
+                        className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
+                      >
+                        +
+                      </button>
+                      <button
+                        onClick={() => insertSymbol("-")}
+                        className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
+                      >
+                        -
+                      </button>
+                      <button
+                        onClick={() => insertSymbol("*")}
+                        className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
+                      >
+                        ×
+                      </button>
+                      <button
+                        onClick={() => insertSymbol("/")}
+                        className="w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors text-sm font-semibold"
+                      >
+                        ÷
+                      </button>
+
+                      <button
+                        onClick={() => insertSymbol("^")}
+                        className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-sm font-semibold text-purple-700"
+                      >
+                        ^
+                      </button>
+                      <button
+                        onClick={() => insertSymbol("**")}
+                        className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-xs font-semibold text-purple-700"
+                      >
+                        **
+                      </button>
+                      <button
+                        onClick={() => insertSymbol("sqrt(")}
+                        className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-xs font-semibold text-purple-700"
+                      >
+                        √
+                      </button>
+                      <button
+                        onClick={() => insertSymbol("pi")}
+                        className="w-10 h-10 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors text-sm font-semibold text-purple-700"
+                      >
+                        π
+                      </button>
+
+                      <button
+                        onClick={() => insertSymbol("(")}
+                        className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
+                      >
+                        (
+                      </button>
+                      <button
+                        onClick={() => insertSymbol(")")}
+                        className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
+                      >
+                        )
+                      </button>
+                      <button
+                        onClick={() => insertSymbol(".")}
+                        className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
+                      >
+                        .
+                      </button>
+                      <button
+                        onClick={() => insertSymbol(",")}
+                        className="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
+                      >
+                        ,
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <input
+                  type="text"
+                  value={row.value}
+                  onChange={(e) => handleRowChange(index, e.target.value)}
+                  onKeyPress={(e) => handleRowKeyPress(e, index)}
+                  onFocus={() => setSelectedRowIndex(index)}
+                  data-row-index={index}
+                  placeholder="例如：2 + 3 * 4"
+                  className="flex-1 px-4 py-2 text-lg border border-gray-300 rounded
                          focus:border-blue-500 focus:outline-none transition-colors"
-              />
+                />
 
-              <div className="flex-shrink-0 w-48">
-                {row.result !== null && (
-                  <div className="text-sm text-green-600 font-semibold">
-                    {row.value} = {row.result}
-                  </div>
-                )}
-                {row.error && (
-                  <div className="text-sm text-red-600">{row.error}</div>
-                )}
+                <div className="flex-shrink-0 w-48">
+                  {row.result !== null && (
+                    <div className="text-sm text-green-600 font-semibold">
+                      {row.value} = {row.result}
+                    </div>
+                  )}
+                  {row.error && (
+                    <div className="text-sm text-red-600">{row.error}</div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
