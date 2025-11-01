@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-const WebsiteTimer = () => {
+export default function WebsiteTimer() {
   const [timeElapsed, setTimeElapsed] = useState({
     days: 0,
     hours: 0,
@@ -74,6 +74,4 @@ const WebsiteTimer = () => {
       </div>
     </div>
   );
-};
-
-export default WebsiteTimer;
+}
