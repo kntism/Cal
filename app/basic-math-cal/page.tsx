@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface InputRow {
   id: string;
@@ -11,23 +11,47 @@ interface InputRow {
 
 function evaluateExpression(expression: string): number | null {
   try {
-    const cleanExpr = expression.replace(/\s/g, '');
+    const cleanExpr = expression.replace(/\s/g, "");
 
-    if (!/^[0-9+\-*/.()]+$/.test(cleanExpr)) {
+    if (!/^[0-9+\-*/.()^sqrt]+$/.test(cleanExpr)) {
       return null;
     }
 
     const tokens: (string | number)[] = [];
-    let currentNumber = '';
+    let currentNumber = "";
 
     for (let i = 0; i < cleanExpr.length; i++) {
       const char = cleanExpr[i];
+
+      // Parse numbers (including decimals)
       if (/[0-9.]/.test(char)) {
         currentNumber += char;
-      } else {
+      } else if (char === "*" && cleanExpr[i + 1] === "*") {
+        // Parse ** as power operator
         if (currentNumber) {
           tokens.push(parseFloat(currentNumber));
-          currentNumber = '';
+          currentNumber = "";
+        }
+        tokens.push("**");
+        i++; // Skip the next *
+      } else if (/[a-z]/.test(char)) {
+        // Parse function names
+        if (currentNumber) {
+          tokens.push(parseFloat(currentNumber));
+          currentNumber = "";
+        }
+        let funcName = "";
+        while (i < cleanExpr.length && /[a-z]/.test(cleanExpr[i])) {
+          funcName += cleanExpr[i];
+          i++;
+        }
+        tokens.push(funcName);
+        i--; // Back up one since for loop will increment
+      } else {
+        // Parse operators and parentheses
+        if (currentNumber) {
+          tokens.push(parseFloat(currentNumber));
+          currentNumber = "";
         }
         tokens.push(char);
       }
@@ -40,8 +64,9 @@ function evaluateExpression(expression: string): number | null {
     const operators: string[] = [];
 
     const precedence = (op: string): number => {
-      if (op === '+' || op === '-') return 1;
-      if (op === '*' || op === '/') return 2;
+      if (op === "+" || op === "-") return 1;
+      if (op === "*" || op === "/") return 2;
+      if (op === "^" || op === "**") return 3;
       return 0;
     };
 
@@ -49,50 +74,87 @@ function evaluateExpression(expression: string): number | null {
       const operator = operators.pop();
       if (!operator) return;
 
+      // Handle function calls
+      if (typeof operator === "string" && operator.startsWith("func:")) {
+        const funcName = operator.substring(5);
+        const arg = values.pop();
+        if (arg === undefined) return;
+
+        switch (funcName) {
+          case "sqrt":
+            if (arg < 0) {
+              throw new Error("Invalid input for sqrt");
+            }
+            values.push(Math.sqrt(arg));
+            break;
+          default:
+            throw new Error(`Unknown function: ${funcName}`);
+        }
+        return;
+      }
+
+      // Handle binary operators
       const right = values.pop();
       const left = values.pop();
       if (right === undefined || left === undefined) return;
 
       switch (operator) {
-        case '+':
+        case "+":
           values.push(left + right);
           break;
-        case '-':
+        case "-":
           values.push(left - right);
           break;
-        case '*':
+        case "*":
           values.push(left * right);
           break;
-        case '/':
+        case "/":
           if (right === 0) {
-            throw new Error('Division by zero');
+            throw new Error("Division by zero");
           }
           values.push(left / right);
+          break;
+        case "^":
+        case "**":
+          values.push(Math.pow(left, right));
           break;
       }
     };
 
     for (const token of tokens) {
-      if (typeof token === 'number') {
+      if (typeof token === "number") {
         values.push(token);
-      } else if (token === '(') {
+      } else if (token === "(") {
         operators.push(token);
-      } else if (token === ')') {
+      } else if (token === ")") {
         while (
           operators.length > 0 &&
-          operators[operators.length - 1] !== '('
+          operators[operators.length - 1] !== "("
         ) {
           applyOperator();
         }
-        if (operators.length === 0 || operators[operators.length - 1] !== '(') {
-          throw new Error('Mismatched parentheses');
+        if (operators.length === 0 || operators[operators.length - 1] !== "(") {
+          throw new Error("Mismatched parentheses");
         }
         operators.pop();
+        // Check if there's a function before the "("
+        if (
+          operators.length > 0 &&
+          typeof operators[operators.length - 1] === "string" &&
+          operators[operators.length - 1].startsWith("func:")
+        ) {
+          const funcName = operators.pop() as string;
+          applyOperator();
+          operators.push(funcName); // Re-push for argument processing
+        }
+      } else if (typeof token === "string" && /^[a-z]+$/.test(token)) {
+        // Function name - push with "func:" prefix
+        operators.push(`func:${token}`);
       } else {
         while (
           operators.length > 0 &&
-          operators[operators.length - 1] !== '(' &&
-          precedence(operators[operators.length - 1]) >=
+          operators[operators.length - 1] !== "(" &&
+          precedence(operators[operators.length - 1] as string) >=
             precedence(token as string)
         ) {
           applyOperator();
@@ -113,24 +175,24 @@ function evaluateExpression(expression: string): number | null {
 
 export default function BasicMathCalculator() {
   const [rows, setRows] = useState<InputRow[]>([
-    { id: '1', value: '', result: null, error: null }
+    { id: "1", value: "", result: null, error: null },
   ]);
   const [selectedRowIndex, setSelectedRowIndex] = useState(0);
 
   const handleGlobalKeyPress = (e: KeyboardEvent) => {
-    if (e.key === 'a' || e.key === 'A') {
+    if (e.key === "Shift") {
       const newRows = [...rows];
       const insertIndex = selectedRowIndex + 1;
       const newId = Date.now().toString();
       newRows.splice(insertIndex, 0, {
         id: newId,
-        value: '',
+        value: "",
         result: null,
-        error: null
+        error: null,
       });
       setRows(newRows);
       setSelectedRowIndex(insertIndex);
-    } else if (e.key === 'Delete') {
+    } else if (e.key === "Delete") {
       if (selectedRowIndex > 0 && rows.length > 1) {
         const newRows = rows.filter((_, index) => index !== selectedRowIndex);
         setRows(newRows);
@@ -140,9 +202,9 @@ export default function BasicMathCalculator() {
   };
 
   useEffect(() => {
-    window.addEventListener('keydown', handleGlobalKeyPress);
+    window.addEventListener("keydown", handleGlobalKeyPress);
     return () => {
-      window.removeEventListener('keydown', handleGlobalKeyPress);
+      window.removeEventListener("keydown", handleGlobalKeyPress);
     };
   }, [selectedRowIndex, rows]);
 
@@ -158,12 +220,12 @@ export default function BasicMathCalculator() {
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number
   ) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       const calculatedResult = evaluateExpression(rows[index].value);
       const newRows = [...rows];
       if (calculatedResult === null) {
         newRows[index].result = null;
-        newRows[index].error = '输入的算式无效，请检查后重试';
+        newRows[index].error = "输入的算式无效，请检查后重试";
       } else {
         newRows[index].result = calculatedResult;
         newRows[index].error = null;
@@ -175,14 +237,19 @@ export default function BasicMathCalculator() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-8 text-center">Basic Math Calculator</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center">
+          Basic Math Calculator
+        </h1>
 
         <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <p className="text-sm text-blue-800">
-            <strong>操作说明：</strong>
-            按 <kbd className="px-2 py-1 bg-blue-200 rounded">a</kbd> 添加行，
-            按 <kbd className="px-2 py-1 bg-blue-200 rounded">Delete</kbd> 删除当前行，
-            按 <kbd className="px-2 py-1 bg-blue-200 rounded">Enter</kbd> 计算当前行
+            <strong>操作说明：</strong>按{" "}
+            <kbd className="px-2 py-1 bg-blue-200 rounded">Shift</kbd>{" "}
+            添加行，按{" "}
+            <kbd className="px-2 py-1 bg-blue-200 rounded">Delete</kbd>{" "}
+            删除当前行，按{" "}
+            <kbd className="px-2 py-1 bg-blue-200 rounded">Enter</kbd>{" "}
+            计算当前行
           </p>
         </div>
 
@@ -192,13 +259,15 @@ export default function BasicMathCalculator() {
               key={row.id}
               className={`flex items-start gap-3 p-4 rounded-lg border transition-colors ${
                 index === selectedRowIndex
-                  ? 'bg-blue-50 border-blue-400 shadow-md'
-                  : 'bg-white border-gray-200 hover:border-gray-300'
+                  ? "bg-blue-50 border-blue-400 shadow-md"
+                  : "bg-white border-gray-200 hover:border-gray-300"
               }`}
               onClick={() => setSelectedRowIndex(index)}
             >
-              <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center
-                           font-semibold text-gray-600">
+              <span
+                className="flex-shrink-0 w-8 h-8 flex items-center justify-center
+                           font-semibold text-gray-600"
+              >
                 {index + 1}
               </span>
 
@@ -220,9 +289,7 @@ export default function BasicMathCalculator() {
                   </div>
                 )}
                 {row.error && (
-                  <div className="text-sm text-red-600">
-                    {row.error}
-                  </div>
+                  <div className="text-sm text-red-600">{row.error}</div>
                 )}
               </div>
             </div>
