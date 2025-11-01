@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, Calculator } from "lucide-react";
 import { evaluateExpression } from "@/lib/math";
 
 interface InputRow {
@@ -27,19 +27,7 @@ export default function BasicMathCalculator() {
   const [showSymbolKeyboard, setShowSymbolKeyboard] = useState(false);
 
   const handleGlobalKeyPress = (e: KeyboardEvent) => {
-    if (e.key === "n" || e.key === "N") {
-      const newRows = [...rows];
-      const insertIndex = selectedRowIndex + 1;
-      const newId = Date.now().toString();
-      newRows.splice(insertIndex, 0, {
-        id: newId,
-        value: "",
-        result: null,
-        error: null,
-      });
-      setRows(newRows);
-      setSelectedRowIndex(insertIndex);
-    } else if (e.key === "Delete") {
+    if (e.key === "Delete") {
       if (selectedRowIndex > 0 && rows.length > 1) {
         const newRows = rows.filter((_, index) => index !== selectedRowIndex);
         setRows(newRows);
@@ -105,17 +93,32 @@ export default function BasicMathCalculator() {
     index: number
   ) => {
     if (e.key === "Enter") {
-      const calculatedResult = evaluateExpression(rows[index].value);
+      e.preventDefault();
       const newRows = [...rows];
-      if (calculatedResult === null) {
-        newRows[index].result = null;
-        newRows[index].error = "输入的算式无效，请检查后重试";
-      } else {
-        newRows[index].result = calculatedResult;
-        newRows[index].error = null;
-      }
+      const insertIndex = index + 1;
+      const newId = Date.now().toString();
+      newRows.splice(insertIndex, 0, {
+        id: newId,
+        value: "",
+        result: null,
+        error: null,
+      });
       setRows(newRows);
+      setSelectedRowIndex(insertIndex);
     }
+  };
+
+  const handleCalculate = (index: number) => {
+    const calculatedResult = evaluateExpression(rows[index].value);
+    const newRows = [...rows];
+    if (calculatedResult === null) {
+      newRows[index].result = null;
+      newRows[index].error = "输入的算式无效，请检查后重试";
+    } else {
+      newRows[index].result = calculatedResult;
+      newRows[index].error = null;
+    }
+    setRows(newRows);
   };
 
   return (
@@ -140,7 +143,7 @@ export default function BasicMathCalculator() {
                     <div className="space-y-2">
                       <div>
                         <kbd className="px-2 py-1 bg-blue-900/50 border border-blue-700 rounded text-blue-300">
-                          n
+                          Enter
                         </kbd>
                         <span className="ml-2">添加新行</span>
                       </div>
@@ -151,10 +154,9 @@ export default function BasicMathCalculator() {
                         <span className="ml-2">删除当前行</span>
                       </div>
                       <div>
-                        <kbd className="px-2 py-1 bg-blue-900/50 border border-blue-700 rounded text-blue-300">
-                          Enter
-                        </kbd>
-                        <span className="ml-2">计算当前行</span>
+                        <span className="ml-8">点击输入框右侧的</span>
+                        <Calculator className="inline w-4 h-4 mx-1 text-blue-400" />
+                        <span>图标计算当前行</span>
                       </div>
                       <div>
                         <kbd className="px-2 py-1 bg-blue-900/50 border border-blue-700 rounded text-blue-300">
@@ -302,7 +304,17 @@ export default function BasicMathCalculator() {
                          transition-all font-mono text-blue-400 placeholder:text-gray-600"
                 />
 
-                <div className="flex-shrink-0 w-56">
+                <button
+                  onClick={() => handleCalculate(index)}
+                  className="flex-shrink-0 w-12 h-12 bg-blue-900/50 border-2 border-blue-700 rounded-lg
+                           hover:bg-blue-800/60 hover:border-blue-500 transition-all duration-200
+                           flex items-center justify-center group"
+                  title="计算结果"
+                >
+                  <Calculator className="w-6 h-6 text-blue-400 group-hover:text-blue-300" />
+                </button>
+
+                <div className="flex-shrink-0 w-48">
                   {row.result !== null && (
                     <div className="text-sm text-blue-400 font-mono font-bold">
                       <span className="text-gray-500">&gt;</span> {row.value} = {row.result}

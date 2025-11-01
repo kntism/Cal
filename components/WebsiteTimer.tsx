@@ -34,42 +34,34 @@ export default function WebsiteTimer() {
 
   return (
     <div className="text-center">
-      <h2 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance mb-6 text-blue-400">
+      <h2 className="scroll-m-20 text-center text-2xl font-extrabold tracking-tight text-balance mb-6 text-blue-400">
         网站已成功运行
       </h2>
       <div className="flex justify-center items-center gap-4 text-2xl font-mono">
         <div className="bg-gray-900 border-2 border-blue-800 px-4 py-2 rounded-lg shadow-sm">
           <span className="font-bold text-blue-400">{timeElapsed.days}</span>
-          <span className="text-sm text-gray-400 ml-1">
-            天
-          </span>
+          <span className="text-sm text-gray-400 ml-1">天</span>
         </div>
         <span className="text-blue-400">:</span>
         <div className="bg-gray-900 border-2 border-blue-800 px-4 py-2 rounded-lg shadow-sm">
           <span className="font-bold text-blue-400">
             {timeElapsed.hours.toString().padStart(2, "0")}
           </span>
-          <span className="text-sm text-gray-400 ml-1">
-            时
-          </span>
+          <span className="text-sm text-gray-400 ml-1">时</span>
         </div>
         <span className="text-blue-400">:</span>
         <div className="bg-gray-900 border-2 border-blue-800 px-4 py-2 rounded-lg shadow-sm">
           <span className="font-bold text-blue-400">
             {timeElapsed.minutes.toString().padStart(2, "0")}
           </span>
-          <span className="text-sm text-gray-400 ml-1">
-            分
-          </span>
+          <span className="text-sm text-gray-400 ml-1">分</span>
         </div>
         <span className="text-blue-400">:</span>
         <div className="bg-gray-900 border-2 border-blue-800 px-4 py-2 rounded-lg shadow-sm">
           <span className="font-bold text-blue-400">
             {timeElapsed.seconds.toString().padStart(2, "0")}
           </span>
-          <span className="text-sm text-gray-400 ml-1">
-            秒
-          </span>
+          <span className="text-sm text-gray-400 ml-1">秒</span>
         </div>
       </div>
     </div>
