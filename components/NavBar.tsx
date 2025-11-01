@@ -21,13 +21,13 @@ export default function NavBar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 shadow-sm z-50">
+    <nav className="fixed top-0 left-0 right-0 bg-black border-b border-gray-800 shadow-sm z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <Calculator className="text-blue-600" size={24} />
-              <span className="text-xl font-bold text-gray-900">Calculator</span>
+              <Calculator className="text-blue-400" size={24} />
+              <span className="text-xl font-bold text-blue-400">Calculator</span>
             </Link>
           </div>
 
@@ -40,8 +40,8 @@ export default function NavBar() {
                   href={item.path}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      ? 'bg-blue-900/50 text-blue-300 border border-blue-700'
+                      : 'text-gray-400 hover:text-blue-300 hover:bg-blue-900/30'
                   }`}
                 >
                   {item.icon}
