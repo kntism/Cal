@@ -121,6 +121,7 @@ export function evaluateExpression(expression: string): number | null {
       } else if (token === "(") {
         operators.push(token);
       } else if (token === ")") {
+        // Process all operators until the matching "("
         while (
           operators.length > 0 &&
           operators[operators.length - 1] !== "("
@@ -130,16 +131,17 @@ export function evaluateExpression(expression: string): number | null {
         if (operators.length === 0 || operators[operators.length - 1] !== "(") {
           throw new Error("Mismatched parentheses");
         }
-        operators.pop();
-        // Check if there's a function before the "("
+        operators.pop(); // Pop the "("
+        // Check if there's a function before the "(" and apply it
         if (
           operators.length > 0 &&
           typeof operators[operators.length - 1] === "string" &&
           operators[operators.length - 1].startsWith("func:")
         ) {
           const funcName = operators.pop() as string;
+          // Create a temporary operator to call applyOperator
+          operators.push(funcName);
           applyOperator();
-          operators.push(funcName); // Re-push for argument processing
         }
       } else if (typeof token === "string" && /^[a-z]+$/.test(token)) {
         // Function name - push with "func:" prefix
