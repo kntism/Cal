@@ -125,7 +125,9 @@ export default function BasicMathCalculator() {
     <div className="pt-24 pb-16 min-h-screen bg-black font-mono">
       <div className="max-w-11/12 mx-auto px-4">
         <div className="flex items-center justify-center gap-4 mb-8">
-          <h1 className="text-4xl font-bold text-blue-400">Basic Math Calculator</h1>
+          <h1 className="text-4xl font-bold text-blue-400">
+            Basic Math Calculator
+          </h1>
           <Dialog>
             <DialogTrigger asChild>
               <button
@@ -137,7 +139,9 @@ export default function BasicMathCalculator() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] bg-gray-950 border-blue-800">
               <DialogHeader>
-                <DialogTitle className="text-blue-400 font-mono">操作说明</DialogTitle>
+                <DialogTitle className="text-blue-400 font-mono">
+                  操作说明
+                </DialogTitle>
                 <DialogDescription asChild>
                   <div className="space-y-4 text-sm text-blue-300 mt-4 font-mono">
                     <div className="space-y-2">
@@ -166,7 +170,9 @@ export default function BasicMathCalculator() {
                       </div>
                     </div>
                     <div className="pt-3 border-t border-blue-800">
-                      <p className="font-semibold mb-2 text-blue-400">支持的运算符：</p>
+                      <p className="font-semibold mb-2 text-blue-400">
+                        支持的运算符：
+                      </p>
                       <ul className="space-y-1 text-xs">
                         <li>• + - * / (基本四则运算)</li>
                         <li>• ^ 或 ** (幂运算)</li>
@@ -190,7 +196,7 @@ export default function BasicMathCalculator() {
           </Dialog>
         </div>
 
-        <div className="max-w-[100%] mx-auto">
+        <div className="max-w-full mx-auto">
           <div className="space-y-3">
             {rows.map((row, index) => (
               <div
@@ -203,8 +209,10 @@ export default function BasicMathCalculator() {
                 onClick={() => setSelectedRowIndex(index)}
               >
                 <span
-                  className={`flex-shrink-0 w-8 h-8 flex items-center justify-center font-mono text-lg ${
-                    index === selectedRowIndex ? "text-blue-400" : "text-gray-500"
+                  className={`shrink-0 w-8 h-8 flex items-center justify-center font-mono text-lg ${
+                    index === selectedRowIndex
+                      ? "text-blue-400"
+                      : "text-gray-500"
                   }`}
                 >
                   {index + 1}
@@ -306,7 +314,7 @@ export default function BasicMathCalculator() {
 
                 <button
                   onClick={() => handleCalculate(index)}
-                  className="flex-shrink-0 w-12 h-12 bg-blue-900/50 border-2 border-blue-700 rounded-lg
+                  className="shrink-0 w-12 h-12 bg-blue-900/50 border-2 border-blue-700 rounded-lg
                            hover:bg-blue-800/60 hover:border-blue-500 transition-all duration-200
                            flex items-center justify-center group"
                   title="计算结果"
@@ -314,14 +322,17 @@ export default function BasicMathCalculator() {
                   <Calculator className="w-6 h-6 text-blue-400 group-hover:text-blue-300" />
                 </button>
 
-                <div className="flex-shrink-0 w-48">
+                <div className="shrink-0 w-48">
                   {row.result !== null && (
                     <div className="text-sm text-blue-400 font-mono font-bold">
-                      <span className="text-gray-500">&gt;</span> {row.value} = {row.result}
+                      <span className="text-gray-500">&gt;</span> {row.value} ={" "}
+                      {row.result}
                     </div>
                   )}
                   {row.error && (
-                    <div className="text-sm text-red-400 font-mono">✗ {row.error}</div>
+                    <div className="text-sm text-red-400 font-mono">
+                      ✗ {row.error}
+                    </div>
                   )}
                 </div>
               </div>
