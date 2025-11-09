@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { HelpCircle, Calculator } from "lucide-react";
-import { evaluateExpression } from "@/lib/math";
+import { evaluateExpression2 } from "@/lib/math2";
 
 interface InputRow {
   id: string;
@@ -109,7 +109,7 @@ export default function BasicMathCalculator() {
   };
 
   const handleCalculate = (index: number) => {
-    const calculatedResult = evaluateExpression(rows[index].value);
+    const calculatedResult = evaluateExpression2(rows[index].value);
     const newRows = [...rows];
     if (calculatedResult === null) {
       newRows[index].result = null;
